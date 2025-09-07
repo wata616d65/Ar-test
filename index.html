@@ -8,15 +8,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <canvas id="game-canvas"></canvas>
 
-    <button id="ar-button">ARを開始</button>
-
-    <div id="ui-container">
-        <div id="score">Score: 0</div>
+    <div id="sensor_contents">
+        <div class="content-box">
+            <h1>AR体験の準備</h1>
+            <p>このARゲームをプレイするには、iPhoneの傾きなどを検知するモーションセンサーへのアクセス許可が必要です。</p>
+            <button id="permission-button">許可してはじめる</button>
+        </div>
     </div>
 
-    <div id="joystick-container">
+    <canvas id="game-canvas"></canvas>
+
+    <button id="ar-button" class="hidden">ARを開始</button>
+    <div id="ui-container" class="hidden">
+        <div id="score">Score: 0</div>
+    </div>
+    <div id="joystick-container" class="hidden">
         <div id="joystick-handle"></div>
     </div>
 
