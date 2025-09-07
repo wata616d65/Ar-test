@@ -3,38 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>WebAR Hole Game with Babylon.js</title>
-    <style>
-        html, body {
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        #renderCanvas {
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-        }
-        #score {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 24px;
-            color: white;
-            background-color: rgba(0,0,0,0.5);
-            padding: 10px;
-            border-radius: 5px;
-            font-family: sans-serif;
-        }
-    </style>
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <title>WebAR Hole Game with A-Frame</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 </head>
 <body>
-    <canvas id="renderCanvas"></canvas>
-    <div id="score">Score: 0</div>
-    <script src="app.js"></script>
+    <a-scene 
+        webxr="requiredFeatures: hit-test;"
+        ar-hit-test="target: #floor;"
+        renderer="colorManagement: true">
+
+        <a-plane id="floor" height="10" width="10" rotation="-90 0 0" visible="false"></a-plane>
+
+        <a-entity id="hole" hole-controls>
+            <a-cylinder 
+                color="#000000" 
+                height="0.02" 
+                radius="0.2"
+                rotation="0 0 0">
+            </a-cylinder>
+        </a-entity>
+
+        <a-entity id="game-manager" game-manager></a-entity>
+        
+    </a-scene>
+
+    <div id="ui-container">
+        <div id="score">Score: 0</div>
+    </div>
+    <div id="joystick-container">
+        <div id="joystick-handle"></div>
+    </div>
+
+    <script src="game-aframe.js"></script>
 </body>
 </html>
