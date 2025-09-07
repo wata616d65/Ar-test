@@ -17,3 +17,8 @@ body {
 }
 /* A-FrameのデフォルトUIを非表示にする */
 .a-enter-ar-button { display: none; }
+
+/* A-Frameが生成するcanvas要素の背景を強制的に透過させる */
+.a-canvas {
+    background-color: transparent !important;
+}
