@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebXR with model-viewer</title>
+    <title>WebXR with model-viewer (Robust)</title>
     <style>
         body, html {
             margin: 0;
@@ -15,10 +15,9 @@
         model-viewer {
             width: 100%;
             height: 100%;
-            --ar-button-display: none; /* デフォルトのARボタンは非表示 */
         }
-        /* わかりやすいようにカスタムARボタンを配置 */
-        #ar-prompt {
+        /* model-viewerに内蔵されるARボタンのスタイルを定義 */
+        #ar-button {
             position: absolute;
             bottom: 20px;
             left: 50%;
@@ -30,7 +29,6 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            z-index: 10;
         }
     </style>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
@@ -47,16 +45,15 @@
         src="https://cdn.glitch.global/2c55a432-1e96-4168-8716-0d195822591e/hole.glb?v=1725679905663"
         alt="A 3D model of a hole">
 
-        <button id="ar-prompt">ARで穴を設置する</button>
+        <button slot="ar-button" id="ar-button">
+            ARで穴を設置する
+        </button>
+
+        <div id="ar-failure" slot="ar-failure">
+            <p>このデバイスではARを利用できません。</p>
+        </div>
 
     </model-viewer>
 
-    <script>
-        // ARボタンがクリックされたら、model-viewerのAR起動機能を呼び出す
-        document.getElementById('ar-prompt').addEventListener('click', () => {
-            document.getElementById('hole-viewer').activateAR();
-        });
-    </script>
-
-</body>
+    </body>
 </html>
