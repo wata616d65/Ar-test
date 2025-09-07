@@ -2,34 +2,24 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebAR Hole Game with model-viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>WebAR Hole Game</title>
     <link rel="stylesheet" href="style.css">
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
+    <canvas id="game-canvas"></canvas>
 
-    <model-viewer
-        id="ar-object"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        camera-controls
-        touch-action="pan-y"
-        src="https://cdn.glitch.global/2c55a432-1e96-4168-8716-0d195822591e/hole.glb?v=1725679905663"
-        alt="A 3D model of a hole"
-        ar-placement="floor"
-        shadow-intensity="1">
+    <button id="ar-button">ARを開始</button>
 
-        <button slot="ar-button" id="ar-button">
-            ARで表示する
-        </button>
+    <div id="ui-container">
+        <div id="score">Score: 0</div>
+    </div>
 
-    </model-viewer>
+    <div id="joystick-container">
+        <div id="joystick-handle"></div>
+    </div>
 
-    <script>
-        // 今後のゲームロジックはここに記述していく
-        // 例: document.querySelector('#ar-object').setAttribute('src', 'new-model.glb');
-    </script>
-
+    <script src="game.js"></script>
 </body>
 </html>
