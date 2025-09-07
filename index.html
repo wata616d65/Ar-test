@@ -9,11 +9,11 @@
 </head>
 <body>
     <a-scene 
-        webxr="optionalFeatures: hit-test, dom-overlay;"
+        background-fix
+        webxr="optionalFeatures: hit-test;"
         ar-hit-test="target: #floor;">
 
         <a-plane id="floor" height="10" width="10" rotation="-90 0 0" visible="false"></a-plane>
-
         <a-entity id="hole" hole-controls>
             <a-cylinder 
                 color="#000000" 
@@ -22,7 +22,6 @@
                 rotation="0 0 0">
             </a-cylinder>
         </a-entity>
-
         <a-entity id="game-manager" game-manager></a-entity>
         
     </a-scene>
