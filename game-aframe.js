@@ -1,6 +1,14 @@
-// グローバル変数
-let score = 0;
-const cubes = [];
+/* ============================================================= */
+/* 【追加】背景の描画を強制的に無効化するコンポーネント         */
+/* ============================================================= */
+AFRAME.registerComponent('background-fix', {
+  init: function () {
+    // A-Frameの裏側にある3D描画エンジン(renderer)に直接アクセスします。
+    // そして、クリアカラー（背景色）のアルファ値（透明度）を0に設定します。
+    // これにより、背景が完全に描画されなくなります。
+    this.el.sceneEl.renderer.setClearColor(new THREE.Color(0x000000), 0);
+  }
+});
 
 /*
  * ゲーム全体の管理とキューブの生成を行うコンポーネント
@@ -97,7 +105,7 @@ AFRAME.registerComponent('hole-controls', {
             let deltaX = currentX - startPos.x;
             let deltaY = currentY - startPos.y;
             const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            if (distance > 30) {
+            if (distance > 30) { // 最大半径30px
                 deltaX = (deltaX / distance) * 30;
                 deltaY = (deltaY / distance) * 30;
             }
@@ -129,3 +137,7 @@ AFRAME.registerComponent('hole-controls', {
         el.object3D.position.z += this.moveVector.y * this.speed;
     }
 });
+
+// グローバル変数
+let score = 0;
+const cubes = [];
