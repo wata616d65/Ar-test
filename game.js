@@ -78,17 +78,15 @@ async function init() {
     console.log("2. 初期化完了");
 }
 
-// ARセッションを開始する
 function startARSession() {
-    console.log("3. ARセッション開始ボタンがクリックされました");
-    navigator.xr.requestSession('immersive-ar', {
-        requiredFeatures: ['hit-test']
-    }).then(onSessionStarted).catch(err => {
-        // 【重要】セッション開始失敗時のエラーハンドリング
-        console.error("ARセッションの開始に失敗しました:", err);
-        alert(`ARセッションの開始に失敗しました。エラー: ${err.message}`);
-        arButton.style.display = 'block';
-    });
+  console.log("3. ARセッション開始ボタンがクリックされました");
+  // オプションを指定せず、最も基本的なARセッションを要求する
+  navigator.xr.requestSession('immersive-ar') 
+      .then(onSessionStarted).catch(err => {
+      console.error("ARセッションの開始に失敗しました:", err);
+      alert(`ARセッションの開始に失敗しました。エラー: ${err.message}`);
+      arButton.style.display = 'block';
+  });
 }
 
 // ARセッションが正常に開始されたときの処理
