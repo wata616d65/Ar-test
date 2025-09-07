@@ -3,30 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>WebAR Hole Game</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>WebAR Hole Game with Babylon.js</title>
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            color: white;
+            background-color: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: sans-serif;
+        }
+    </style>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
 </head>
 <body>
-
-    <div id="sensor_contents">
-        <div class="content-box">
-            <h1>AR体験の準備</h1>
-            <p>このARゲームをプレイするには、iPhoneの傾きなどを検知するモーションセンサーへのアクセス許可が必要です。</p>
-            <button id="permission-button">許可してはじめる</button>
-        </div>
-    </div>
-
-    <canvas id="game-canvas"></canvas>
-
-    <button id="ar-button" class="hidden">ARを開始</button>
-    <div id="ui-container" class="hidden">
-        <div id="score">Score: 0</div>
-    </div>
-    <div id="joystick-container" class="hidden">
-        <div id="joystick-handle"></div>
-    </div>
-
-    <script src="game.js"></script>
+    <canvas id="renderCanvas"></canvas>
+    <div id="score">Score: 0</div>
+    <script src="app.js"></script>
 </body>
 </html>
