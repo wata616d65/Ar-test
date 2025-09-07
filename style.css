@@ -1,70 +1,107 @@
 body {
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  font-family: sans-serif;
-  color: white;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: sans-serif;
+    color: white;
 }
 
+/* 【追加】センサー許可画面のスタイル */
+#sensor_contents {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 20;
+    color: #333;
+}
+#sensor_contents .content-box {
+    background-color: white;
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 80%;
+}
+#sensor_contents p {
+    margin: 20px 0;
+    line-height: 1.6;
+}
+#permission-button {
+    padding: 15px 30px;
+    font-size: 18px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* 【追加】UIの表示/非表示を切り替えるクラス */
+.hidden {
+    display: none !important;
+}
+
+
+/* --- 既存のスタイル (変更なし) --- */
 #game-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
-
 #ar-button {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 15px 30px;
-  font-size: 18px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 10;
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 30px;
+    font-size: 18px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 10;
 }
-
 #ui-container {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 10;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
 }
-
 #score {
-  font-size: 24px;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 10px;
-  border-radius: 5px;
+    font-size: 24px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 5px;
 }
-
-/* ジョイスティックのスタイル */
 #joystick-container {
-  position: absolute;
-  bottom: 50px;
-  left: 50px;
-  width: 120px;
-  height: 120px;
-  background-color: rgba(128, 128, 128, 0.4);
-  border-radius: 50%;
-  z-index: 10;
-  display: none; /* AR開始後に表示 */
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+    width: 120px;
+    height: 120px;
+    background-color: rgba(128, 128, 128, 0.4);
+    border-radius: 50%;
+    z-index: 10;
+    /* display: none; は .hidden で管理 */
 }
-
 #joystick-handle {
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  background-color: rgba(255, 255, 255, 0.7);
-  border-radius: 50%;
-  left: 30px;
-  top: 30px;
-  cursor: grab;
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    left: 30px;
+    top: 30px;
+    cursor: grab;
 }
