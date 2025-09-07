@@ -2,117 +2,143 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>AR Hole Game (Markerless)</title>
+  <title>AR Hole Game (Markerless - Improved)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 
   <style>
     /* UI全体のスタイル */
     #overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: transparent;
-      color: white;
-      font-family: sans-serif;
-      text-align: center;
-      z-index: 1;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; font-family: sans-serif;
     }
-    /* AR開始前のボタン */
-    #ar-button {
-      background-color: #007bff;
-      border: none;
-      color: white;
-      padding: 15px 30px;
-      font-size: 20px;
-      border-radius: 10px;
-      cursor: pointer;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    /* ステージ設置の指示テキスト */
-    #instruction-text {
-      position: absolute;
-      top: 70%;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: rgba(0,0,0,0.7);
-      padding: 10px;
-      border-radius: 5px;
-      display: none; /* 最初は非表示 */
-    }
-    /* スコア表示 */
-    #score-display {
-      position: absolute;
-      top: 20px;
-      left: 20px;
+    #overlay-content {
       background-color: rgba(0,0,0,0.5);
-      padding: 10px 20px;
+      padding: 20px;
       border-radius: 10px;
-      font-size: 24px;
-      display: none; /* 最初は非表示 */
+      color: white;
+    }
+    #ar-button {
+      background-color: #007bff; border: none; color: white;
+      padding: 15px 30px; font-size: 20px; border-radius: 10px;
+      cursor: pointer;
+    }
+    #ar-button:disabled {
+      background-color: #555; cursor: not-allowed;
+    }
+    #instruction-text, #score-display { display: none; } /* 最初は非表示 */
+    #score-display {
+      position: absolute; top: 20px; left: 20px;
     }
   </style>
 </head>
 
-<body style="margin: 0px; overflow: hidden;">
+<body style="margin: 0; overflow: hidden;">
 
   <div id="overlay">
-    <button id="ar-button">ARを開始</button>
-    <div id="instruction-text">スマホを動かして床を認識し、タップしてステージを設置</div>
+    <div id="overlay-content">
+      <button id="ar-button">AR機能をチェック中...</button>
+      <p id="instruction-text">スマホを動かして床を認識し、<br>タップしてステージを設置</p>
+    </div>
     <div id="score-display">Score: 0</div>
   </div>
 
   <script>
+    // --- ゲームロジックのコンポーネント ---
     AFRAME.registerComponent('game-logic', {
       init: function () {
-        // --- 要素の取得 ---
         this.stage = document.querySelector('#stage');
         this.hole = document.querySelector('#hole');
-        this.reticle = document.querySelector('#reticle'); // 地面認識カーソル
+        this.reticle = document.querySelector('#reticle');
         this.scoreDisplay = document.querySelector('#score-display');
         this.instructionText = document.querySelector('#instruction-text');
+        this.arButton = document.querySelector('#ar-button');
         
-        // --- ゲームの状態管理 ---
-        this.stagePlaced = false; // ステージが設置されたか
+        this.stagePlaced = false;
         this.score = 0;
         this.cubes = [];
 
-        // シーンがARモードに入ったときの処理
+        // 1. ブラウザがARに対応しているかチェック
+        if (navigator.xr) {
+          navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
+            if (supported) {
+              this.arButton.textContent = 'ARを開始';
+              // 2. ボタンが押されたらARセッションを開始する
+              this.arButton.addEventListener('click', () => {
+                this.el.sceneEl.enterVR(true);
+              });
+            } else {
+              this.arButton.textContent = 'ARに対応していません';
+              this.arButton.disabled = true;
+            }
+          });
+        } else {
+          this.arButton.textContent = 'ARに対応していません';
+          this.arButton.disabled = true;
+        }
+
+        // 3. ARモードに入った時の処理
         this.el.sceneEl.addEventListener('enter-vr', () => {
           if (this.el.sceneEl.is('ar-mode')) {
-            this.instructionText.style.display = 'block';
-            this.scoreDisplay.style.display = 'block';
-            this.reticle.setAttribute('visible', true); // カーソル表示
+            this.arButton.style.display = 'none'; // 開始ボタンを隠す
+            this.instructionText.style.display = 'block'; // 指示を表示
+            this.scoreDisplay.style.display = 'block'; // スコアを表示
+            this.reticle.setAttribute('visible', true); // 地面カーソルを表示
           }
         });
-        
-        // 画面タップでステージを設置
-        window.addEventListener('click', () => {
-          if (!this.stagePlaced && this.reticle.getAttribute('visible')) {
-            // ステージをカーソルの位置に移動
-            this.stage.setAttribute('position', this.reticle.getAttribute('position'));
-            this.stage.setAttribute('visible', true);
-            this.stagePlaced = true;
-            
-            // カーソルと指示を非表示
-            this.reticle.setAttribute('visible', false);
-            this.instructionText.style.display = 'none';
 
-            // Cubeを生成
-            this.generateCubes();
-          }
+        // 4. 画面タップでステージを設置
+        window.addEventListener('click', () => {
+          if (this.stagePlaced || !this.reticle.getAttribute('visible')) return;
+          
+          this.stage.setAttribute('position', this.reticle.getAttribute('position'));
+          this.stage.setAttribute('visible', true);
+          this.stagePlaced = true;
+          
+          this.reticle.setAttribute('visible', false);
+          this.instructionText.style.display = 'none';
+
+          this.generateCubes();
         });
       },
 
-      // Cubeを生成する関数
+      generateCubes: function() { /* (この部分は変更なし) */ },
+      tick: function () { /* (この部分は変更なし) */ }
+    });
+    
+    // (generateCubesとtick関数は長いため、下のコードブロックに分けます)
+  </script>
+
+  <a-scene
+    webxr="requiredFeatures: local-floor, hit-test; optionalFeatures: dom-overlay; overlayElement: #overlay;"
+    ar-hit-test="target: #reticle;"
+    renderer="colorManagement: true;"
+    game-logic>
+    
+    <a-assets><a-asset-item id="ring" src="https://cdn.glitch.com/a63168a9-688f-4939-88a3-23a85c4aff07%2Freticle.gltf?v=1605380585150"></a-asset-item></a-assets>
+
+    <a-light type="ambient" color="#FFF" intensity="0.7"></a-light>
+    <a-light type="directional" color="#FFF" intensity="0.8" position="-1 2 1"></a-light>
+
+    <a-camera>
+      <a-cylinder id="hole" position="0 -4 -4" rotation="-90 0 0" radius="0.5" height="0.02" color="black"></a-cylinder>
+    </a-camera>
+
+    <a-entity id="reticle" visible="false" ar-hit-test-target gltf-model="#ring" scale="0.1 0.1 0.1"></a-entity>
+
+    <a-entity id="stage" visible="false">
+        <a-plane position="0 0.01 0" rotation="-90 0 0" width="8" height="8" color="#CCCCCC" shadow="receive: true"></a-plane>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    AFRAME.registerComponent('game-logic', {
+      // (init関数は上で定義済みなので、ここでは上書きしない)
+      schema: {}, // A-Frameの仕様で必要
       generateCubes: function() {
         const CUBE_COUNT = 30;
         const STAGE_RADIUS = 3;
-
         for (let i = 0; i < CUBE_COUNT; i++) {
           const cube = document.createElement('a-box');
           const size = Math.random() * 0.4 + 0.2;
@@ -121,46 +147,31 @@
           const x = Math.cos(angle) * radius;
           const z = Math.sin(angle) * radius;
           const y = size / 2;
-          
           const red = Math.floor(255 * (size - 0.2) / 0.4);
           const blue = 255 - red;
           const color = `rgb(${red}, 80, ${blue})`;
-          
           cube.setAttribute('position', {x: x, y: y, z: z});
           cube.setAttribute('scale', {x: size, y: size, z: size});
           cube.setAttribute('color', color);
           cube.setAttribute('shadow', '');
-          
           this.cubes.push(cube);
           this.stage.appendChild(cube);
         }
       },
-
-      // 毎フレーム実行
       tick: function () {
-        // ステージが設置されていなければ何もしない
         if (!this.stagePlaced) return;
-
-        // --- 当たり判定ロジック (マーカー版とほぼ同じ) ---
-        // ワールド座標系で計算するために、各オブジェクトの絶対位置を取得
         const holeWorldPosition = new THREE.Vector3();
         this.hole.object3D.getWorldPosition(holeWorldPosition);
-
         const holeRadius = this.hole.getAttribute('radius');
-
         for (let i = this.cubes.length - 1; i >= 0; i--) {
           const cube = this.cubes[i];
           const cubeWorldPosition = new THREE.Vector3();
           cube.object3D.getWorldPosition(cubeWorldPosition);
-          
           const cubeSize = cube.getAttribute('scale').x;
-          
           const distanceX = holeWorldPosition.x - cubeWorldPosition.x;
           const distanceZ = holeWorldPosition.z - cubeWorldPosition.z;
           const distance = Math.sqrt(distanceX * distanceX + distanceZ * distanceZ);
-
           if (holeRadius < cubeSize / 2) continue;
-          
           if (distance < holeRadius) {
             this.stage.removeChild(cube);
             this.cubes.splice(i, 1);
@@ -173,45 +184,5 @@
       }
     });
   </script>
-
-  <a-scene
-    webxr="requiredFeatures: local-floor, hit-test; optionalFeatures: dom-overlay; overlayElement: #overlay;"
-    ar-hit-test="target: #reticle;"
-    renderer="antialias: true; colorManagement: true;"
-    game-logic>
-    
-    <a-light type="ambient" color="#FFF" intensity="0.7"></a-light>
-    <a-light type="directional" color="#FFF" intensity="0.8" position="-1 2 1"></a-light>
-
-    <a-camera>
-      <a-cylinder id="hole" position="0 -4 -4" rotation="-90 0 0" radius="0.5" height="0.02" color="black"></a-cylinder>
-    </a-camera>
-
-    <a-entity id="reticle" visible="false" ar-hit-test-target
-      ring-reticle="color: #FFF; innerRadius: 0.01; outerRadius: 0.08;">
-    </a-entity>
-
-    <a-entity id="stage" visible="false">
-        <a-plane position="0 0 0" rotation="-90 0 0" width="8" height="8" color="#CCCCCC" shadow="receive: true"></a-plane>
-    </a-entity>
-
-  </a-scene>
 </body>
 </html>
-
-<script>
-AFRAME.registerComponent('ring-reticle', {
-  schema: {
-    color: {default: '#FFF'},
-    innerRadius: {default: 0.05},
-    outerRadius: {default: 0.1}
-  },
-  init: function () {
-    var geometry = new THREE.RingGeometry(this.data.innerRadius, this.data.outerRadius, 32, 1);
-    geometry.rotateX(-Math.PI / 2);
-    var material = new THREE.MeshBasicMaterial({color: this.data.color});
-    this.ring = new THREE.Mesh(geometry, material);
-    this.el.setObject3D('ring', this.ring);
-  }
-});
-</script>
