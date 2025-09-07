@@ -11,7 +11,8 @@
     <a-scene 
         webxr="requiredFeatures: hit-test;"
         ar-hit-test="target: #floor;"
-        renderer="colorManagement: true">
+        renderer="colorManagement: true; alpha: true;"
+        background="transparent: true">
 
         <a-plane id="floor" height="10" width="10" rotation="-90 0 0" visible="false"></a-plane>
 
